@@ -16,6 +16,7 @@ export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, "inventory"));
@@ -64,6 +65,10 @@ export default function Home() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const filteredInventory = inventory.filter(item=>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Box
@@ -120,6 +125,13 @@ export default function Home() {
       >
         Add new item
       </Button>
+      <TextField
+        variant="outlined"
+        placeholder="Search items"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: 20 }}
+      />
       <Box border="1px solid #333">
         <Box
           width="800px"
@@ -133,8 +145,8 @@ export default function Home() {
             Inventory Items
           </Typography>
         </Box>
-        <Stack width="800px" hight="300px" spacing={2} overflow="auto">
-          {inventory.map(({ name, quantity }) => (
+        <Stack width="800px" height="300px" spacing={2} overflow="auto">
+          {filteredInventory.map(({ name, quantity }) => (
             <Box
               key={name}
               width="100%"
@@ -160,14 +172,14 @@ export default function Home() {
                 Remove
               </Button>
               <Stack direction="row" spacing={2}>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  addItem(name);
-                }}
-              >
-                Add
-              </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    addItem(name);
+                  }}
+                >
+                  Add
+                </Button>
               </Stack>
             </Box>
           ))}
